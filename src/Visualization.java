@@ -14,12 +14,12 @@ public class Visualization{
 
     private void setDotList(){
         dotList = new ArrayList<>();
-        int degree;
-        int tempDeg = 0;
+        double degree;
+        double tempDeg = 0;
         int quarter = 1;
         double tempX, tempY;
 
-        degree = 180/(numDots/2);
+        degree = 180/(((double)numDots)/2);
         dotList.add(new Dot(1, 0, 200));
         for(int i = 2; i <= numDots; i++){
             if(i == (numDots/2)+1){

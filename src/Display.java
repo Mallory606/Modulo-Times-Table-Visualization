@@ -21,7 +21,7 @@ public class Display extends javafx.application.Application{
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Modulo Times Table Visualization");
 
-        numDots = 82;
+        numDots = 80;
         timesTable = 2;
 
         visual = new Canvas(405, 405);
