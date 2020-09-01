@@ -15,14 +15,16 @@ public class Display extends javafx.application.Application{
     private Canvas visual;
     private int numDots;
     private int timesTable;
+    private Color color;
     private boolean started = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Modulo Times Table Visualization");
 
-        numDots = 80;
+        numDots = 200;
         timesTable = 2;
+        color = Color.BLACK;
 
         visual = new Canvas(405, 405);
         Button start = new Button("Start");
@@ -36,10 +38,24 @@ public class Display extends javafx.application.Application{
                 start.setText("Start");
             }
         });
+        Button changeColor = new Button("Change Color");
+        changeColor.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if(color == Color.BLACK){ color = Color.YELLOWGREEN; }
+            else if(color == Color.YELLOWGREEN){ color = Color.RED; }
+            else if(color == Color.RED){ color = Color.MEDIUMTURQUOISE; }
+            else if(color == Color.MEDIUMTURQUOISE){ color = Color.VIOLET; }
+            else if(color == Color.VIOLET){ color = Color.MEDIUMVIOLETRED; }
+            else if(color == Color.MEDIUMVIOLETRED){color = Color.MEDIUMBLUE; }
+            else if(color == Color.MEDIUMBLUE){ color = Color.DARKOLIVEGREEN; }
+            else if(color == Color.DARKOLIVEGREEN){ color = Color.DARKORANGE; }
+            else if(color == Color.DARKORANGE){ color = Color.AQUA; }
+            else{ color = Color.BLACK; }
+        });
 
         FlowPane flow = new FlowPane();
 
         flow.getChildren().add(start);
+        flow.getChildren().add(changeColor);
 
         BorderPane border = new BorderPane();
 
@@ -50,13 +66,11 @@ public class Display extends javafx.application.Application{
         primaryStage.setScene(scene);
         primaryStage.show();
 
-
-        initializeVis();
-
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
                 if(started){
+                    initializeVis();
                 }
             }
         };
@@ -71,7 +85,7 @@ public class Display extends javafx.application.Application{
         if(numDots%2 != 0){ numDots++; }
         vis = new Visualization(timesTable, numDots);
         gc.setFill(Color.BLACK);
-        gc.setStroke(Color.YELLOWGREEN);
+        gc.setStroke(color);
         gc.setLineWidth(3);
         gc.strokeOval(0, 0, 400, 400);
         gc.setStroke(Color.BLACK);
