@@ -82,11 +82,12 @@ public class Display extends javafx.application.Application{
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
-                if(started){
-                    initializeVis();
-                }
-                else{
-                    updateValues();
+                if(now%1_000_000_000 == 0) {
+                    if (started) {
+                        initializeVis();
+                    } else {
+                        updateValues();
+                    }
                 }
             }
         };
