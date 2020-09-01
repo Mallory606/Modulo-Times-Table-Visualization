@@ -21,7 +21,7 @@ public class Display extends javafx.application.Application{
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Modulo Times Table Visualization");
 
-        numDots = 8;
+        numDots = 82;
         timesTable = 2;
 
         visual = new Canvas(405, 405);
@@ -68,6 +68,7 @@ public class Display extends javafx.application.Application{
     private void initializeVis(){
         GraphicsContext gc = visual.getGraphicsContext2D();
         double[] dotCoord;
+        if(numDots%2 != 0){ numDots++; }
         vis = new Visualization(timesTable, numDots);
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.YELLOWGREEN);
