@@ -24,7 +24,7 @@ public class Display extends javafx.application.Application{
         numDots = 8;
         timesTable = 2;
 
-        visual = new Canvas(405, 400);
+        visual = new Canvas(405, 405);
         Button start = new Button("Start");
         start.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if(!started){
@@ -46,15 +46,17 @@ public class Display extends javafx.application.Application{
         border.setCenter(visual);
         border.setRight(flow);
 
-        Scene scene = new Scene(border, 600, 400);
+        Scene scene = new Scene(border, 600, 405);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+
+        initializeVis();
 
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
                 if(started){
-                    initializeVis();
                 }
             }
         };
@@ -65,10 +67,10 @@ public class Display extends javafx.application.Application{
 
     private void initializeVis(){
         GraphicsContext gc = visual.getGraphicsContext2D();
-        int[] dotCoord;
+        double[] dotCoord;
         vis = new Visualization(timesTable, numDots);
         gc.setFill(Color.BLACK);
-        gc.setStroke(Color.DARKRED);
+        gc.setStroke(Color.YELLOWGREEN);
         gc.setLineWidth(3);
         gc.strokeOval(0, 0, 400, 400);
         gc.setStroke(Color.BLACK);

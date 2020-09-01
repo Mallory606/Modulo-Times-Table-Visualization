@@ -14,36 +14,54 @@ public class Visualization{
 
     private void setDotList(){
         dotList = new ArrayList<>();
-        int dist = 400/(numDots/2);
-        int tempDist, mult;
+        int degree = 180/(numDots/2);
+        int tempDeg = 0;
+        int quarter = 1;
 
         if(numDots%2 != 0){ numDots += 1; }
 
-        tempDist = 0;
         dotList.add(new Dot(1, 0, 200));
         for(int i = 2; i <= numDots; i++){
-            if(i <= numDots/2){
-                tempDist += dist;
-                dotList.add(new Dot(i));
-                dotList.get(i-1).setX(tempDist);
+            if(i == (numDots/2)+1){
+                dotList.add(new Dot(i, 400, 200));
+                tempDeg = 0;
+                quarter++;
             }
-            else if(i == (numDots/2)+1){ dotList.add(new Dot(i, 400, 200)); }
             else{
-                tempDist -= dist;
-                dotList.add(new Dot(i));
-                dotList.get(i-1).setX(tempDist);
+                tempDeg += degree;
+                if(tempDeg == 90){
+                    if(quarter == 1){ dotList.add(new Dot(i, 200, 0)); }
+                    else{ dotList.add(new Dot(i, 200, 400)); }
+                }
+                else{
+                    dotList.add(new Dot(i));
+                    if(tempDeg > 90){
+                        tempDeg -= 90;
+                        quarter++;
+                    }
+                    if(quarter == 1){
+                        dotList.get(i-1).setX(200-(200*Math.cos(tempDeg)));
+                        dotList.get(i-1).setY(200-(200*Math.sin(tempDeg)));
+                    } else if (quarter == 2){
+                        dotList.get(i-1).setX(200+(200*Math.cos(tempDeg)));
+                        dotList.get(i-1).setY(200-(200*Math.sin(tempDeg)));
+                    } else if (quarter == 3){
+                        dotList.get(i-1).setX(200+(200*Math.cos(tempDeg)));
+                        dotList.get(i-1).setY(200+(200*Math.sin(tempDeg)));
+                    } else{
+                        dotList.get(i-1).setX(200-(200*Math.cos(tempDeg)));
+                        dotList.get(i-1).setY(200+(200*Math.sin(tempDeg)));
+                    }
+                }
+                System.out.println("Dot #" + i);
+                System.out.println("Degree = " + tempDeg);
+                System.out.println("x = " + dotList.get(i-1).getX());
+                System.out.println("y = " + dotList.get(i-1).getY());
             }
-        }
-        mult = -1;
-        tempDist = 200;
-        for(int j = 1; j < numDots; j++){
-            if(tempDist == 0 || tempDist == 400){ mult *= -1; }
-            tempDist += dist*mult;
-            dotList.get(j).setY(tempDist);
         }
     }
 
-    public int[] getDot(int i){
-        return new int[] { dotList.get(i).getX(), dotList.get(i).getY() };
+    public double[] getDot(int i){
+        return new double[] { dotList.get(i).getX(), dotList.get(i).getY() };
     }
 }
