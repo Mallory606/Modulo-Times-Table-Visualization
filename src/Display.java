@@ -1,11 +1,15 @@
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -13,6 +17,7 @@ public class Display extends javafx.application.Application{
 
     private Visualization vis;
     private Canvas visual;
+    private TextField numDotsField;
     private int numDots;
     private int timesTable;
     private Color color;
@@ -51,26 +56,37 @@ public class Display extends javafx.application.Application{
             else if(color == Color.DARKORANGE){ color = Color.AQUA; }
             else{ color = Color.BLACK; }
         });
+        HBox numDotsInterface = new HBox(10);
+        Label numDotsLabel = new Label("Number of Dots");
+        numDotsField = new TextField("0");
+        numDotsInterface.getChildren().add(numDotsLabel);
+        numDotsInterface.getChildren().add(numDotsField);
 
-        FlowPane flow = new FlowPane();
+        VBox buttonInterface = new VBox(10);
+        buttonInterface.setAlignment(Pos.TOP_CENTER);
 
-        flow.getChildren().add(start);
-        flow.getChildren().add(changeColor);
+        buttonInterface.getChildren().add(start);
+        buttonInterface.getChildren().add(changeColor);
+        buttonInterface.getChildren().add(numDotsInterface);
 
         BorderPane border = new BorderPane();
 
         border.setCenter(visual);
-        border.setRight(flow);
+        border.setRight(buttonInterface);
 
         Scene scene = new Scene(border, 600, 405);
         primaryStage.setScene(scene);
         primaryStage.show();
+
 
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
                 if(started){
                     initializeVis();
+                }
+                else{
+                    updateValues();
                 }
             }
         };
@@ -84,6 +100,8 @@ public class Display extends javafx.application.Application{
         double[] dotCoord;
         if(numDots%2 != 0){ numDots++; }
         vis = new Visualization(timesTable, numDots);
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, 405, 405);
         gc.setFill(Color.BLACK);
         gc.setStroke(color);
         gc.setLineWidth(3);
@@ -92,6 +110,24 @@ public class Display extends javafx.application.Application{
         for(int i = 0; i < numDots; i++){
             dotCoord = vis.getDot(i);
             gc.fillOval(dotCoord[0], dotCoord[1], 3, 3);
+        }
+    }
+
+    private void updateValues(){
+        String temp = numDotsField.getText();
+        int newNumDots = 0;
+        boolean validInput = false;
+        if(!temp.equals("")) {
+            try {
+                newNumDots = Integer.parseInt(temp);
+                validInput = true;
+            } catch (NumberFormatException n) {
+                System.out.println(temp +
+                        " is not a valid input for the number of dots.");
+            }
+        }
+        if(validInput){
+            if(newNumDots >= 0){ numDots = Math.min(newNumDots, 360); }
         }
     }
 }
