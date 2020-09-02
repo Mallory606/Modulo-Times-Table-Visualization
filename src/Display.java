@@ -65,9 +65,8 @@ public class Display extends javafx.application.Application{
             else{ color = Color.BLACK; }
         });
         Button restart = new Button("Restart");
-        restart.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-           updateValuesNewVis();
-        });
+        restart.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                event -> updateValuesNewVis());
 
         HBox numDotsInterface = new HBox(10);
         Label numDotsLabel = new Label("Number of Dots");
@@ -132,7 +131,7 @@ public class Display extends javafx.application.Application{
                     try{
                         o.wait(interval);
                         updateValues();
-
+                        timesTable += increment;
                     } catch(InterruptedException e){
                         e.printStackTrace();
                     }
@@ -220,6 +219,8 @@ public class Display extends javafx.application.Application{
         if(validInput){
             if(newTimesTable >= 0){ timesTable= Math.min(newTimesTable, 360); }
         }
+
+        increment = incrementSlider.getValue();
     }
 
     private void updateValues(){
