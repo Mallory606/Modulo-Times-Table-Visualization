@@ -35,7 +35,7 @@ public class Display extends javafx.application.Application{
         interval = 1000;
         color = Color.BLACK;
 
-        visual = new Canvas(405, 405);
+        visual = new Canvas(410, 410);
         Button start = new Button("Start");
         start.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if(!started){
@@ -93,7 +93,7 @@ public class Display extends javafx.application.Application{
         BorderPane.setAlignment(visual, Pos.CENTER);
         BorderPane.setAlignment(buttonInterface, Pos.CENTER);
 
-        Scene scene = new Scene(border, 700, 405);
+        Scene scene = new Scene(border, 700, 410);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -102,7 +102,7 @@ public class Display extends javafx.application.Application{
             synchronized(o){
                 while(true){
                     try{
-                        o.wait(1000);
+                        o.wait(interval);
                         updateValues();
 
                     } catch(InterruptedException e){
@@ -136,11 +136,27 @@ public class Display extends javafx.application.Application{
         gc.setFill(Color.BLACK);
         gc.setStroke(color);
         gc.setLineWidth(3);
-        gc.strokeOval(0, 0, 400, 400);
+        gc.strokeOval(5, 5, 400, 400);
+        /*
         gc.setStroke(Color.BLACK);
         for(int i = 0; i < numDots; i++){
             dotCoord = vis.getDot(i);
-            gc.fillOval(dotCoord[0], dotCoord[1], 3, 3);
+            gc.fillOval(dotCoord[0]+5, dotCoord[1]+5, 3, 3);
+        }
+        */
+        drawVis(gc);
+    }
+
+    private void drawVis(GraphicsContext gc){
+        double product;
+        double[] origin, end;
+        gc.setStroke(color);
+        gc.setLineWidth(1);
+        for(int i = 0; i < numDots; i++){
+            product = (i*timesTable)%numDots;
+            origin = vis.getDot(i);
+            end = vis.getDot((int)product);
+            gc.strokeLine(origin[0]+5, origin[1]+5, end[0]+5, end[1]+5);
         }
     }
 
