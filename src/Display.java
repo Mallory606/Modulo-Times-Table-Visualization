@@ -5,6 +5,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -18,8 +19,10 @@ public class Display extends javafx.application.Application{
     private Visualization vis;
     private Canvas visual;
     private TextField numDotsField;
+    private Slider intervalSlider;
     private int numDots;
     private int timesTable;
+    private int interval;
     private Color color;
     private boolean started = false;
 
@@ -29,6 +32,7 @@ public class Display extends javafx.application.Application{
 
         numDots = 200;
         timesTable = 2;
+        interval = 1000;
         color = Color.BLACK;
 
         visual = new Canvas(405, 405);
@@ -56,11 +60,23 @@ public class Display extends javafx.application.Application{
             else if(color == Color.DARKORANGE){ color = Color.AQUA; }
             else{ color = Color.BLACK; }
         });
+
         HBox numDotsInterface = new HBox(10);
         Label numDotsLabel = new Label("Number of Dots");
         numDotsField = new TextField("0");
         numDotsInterface.getChildren().add(numDotsLabel);
         numDotsInterface.getChildren().add(numDotsField);
+
+        HBox intervalInterface = new HBox(10);
+        Label intervalLabel = new Label("Frames per Second");
+        intervalSlider = new Slider(0.5, 2.5, 1);
+        intervalSlider.setMinorTickCount(1);
+        intervalSlider.setMajorTickUnit(1);
+        intervalSlider.setShowTickMarks(true);
+        intervalSlider.setShowTickLabels(true);
+        intervalSlider.setSnapToTicks(true);
+        intervalInterface.getChildren().add(intervalLabel);
+        intervalInterface.getChildren().add(intervalSlider);
 
         VBox buttonInterface = new VBox(10);
         buttonInterface.setAlignment(Pos.TOP_CENTER);
@@ -68,29 +84,43 @@ public class Display extends javafx.application.Application{
         buttonInterface.getChildren().add(start);
         buttonInterface.getChildren().add(changeColor);
         buttonInterface.getChildren().add(numDotsInterface);
+        buttonInterface.getChildren().add(intervalInterface);
 
         BorderPane border = new BorderPane();
 
         border.setCenter(visual);
         border.setRight(buttonInterface);
+        BorderPane.setAlignment(visual, Pos.CENTER);
+        BorderPane.setAlignment(buttonInterface, Pos.CENTER);
 
-        Scene scene = new Scene(border, 600, 405);
+        Scene scene = new Scene(border, 700, 405);
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        Thread intervalTimer = new Thread(() -> {
+            Object o = new Object();
+            synchronized(o){
+                while(true){
+                    try{
+                        o.wait(1000);
+                        updateValues();
+
+                    } catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
-                if(now%1_000_000_000 == 0) {
-                    if (started) {
-                        initializeVis();
-                    } else {
-                        updateValues();
-                    }
+                if (started) {
+                    initializeVis();
                 }
             }
         };
+        intervalTimer.start();
         a.start();
     }
 
@@ -118,11 +148,11 @@ public class Display extends javafx.application.Application{
         String temp = numDotsField.getText();
         int newNumDots = 0;
         boolean validInput = false;
-        if(!temp.equals("")) {
-            try {
+        if(!temp.equals("")){
+            try{
                 newNumDots = Integer.parseInt(temp);
                 validInput = true;
-            } catch (NumberFormatException n) {
+            } catch(NumberFormatException n){
                 System.out.println(temp +
                         " is not a valid input for the number of dots.");
             }
@@ -130,5 +160,12 @@ public class Display extends javafx.application.Application{
         if(validInput){
             if(newNumDots >= 0){ numDots = Math.min(newNumDots, 360); }
         }
+
+        double newInterval = intervalSlider.getValue();
+        if(newInterval == 0.5){ interval = 2000; }
+        else if(newInterval == 1){ interval = 1000; }
+        else if(newInterval == 1.5){ interval = 750; }
+        else if(newInterval == 2){ interval = 500; }
+        else{ interval = 250; }
     }
 }
