@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Visualization{
-    private int timesTable;
+    private double timesTable;
     private List<Dot> dotList;
     private int numDots;
 
-    public Visualization(int times, int dots){
+    public Visualization(double times, int dots){
         timesTable = times;
         numDots = dots;
         setDotList();

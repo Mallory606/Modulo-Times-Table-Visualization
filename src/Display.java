@@ -19,9 +19,12 @@ public class Display extends javafx.application.Application{
     private Visualization vis;
     private Canvas visual;
     private TextField numDotsField;
+    private TextField timesTableField;
     private Slider intervalSlider;
+    private Slider incrementSlider;
     private int numDots;
-    private int timesTable;
+    private double timesTable;
+    private double increment;
     private int interval;
     private Color color;
     private boolean started = false;
@@ -30,8 +33,9 @@ public class Display extends javafx.application.Application{
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Modulo Times Table Visualization");
 
-        numDots = 200;
+        numDots = 0;
         timesTable = 2;
+        increment = 1;
         interval = 1000;
         color = Color.BLACK;
 
@@ -60,12 +64,22 @@ public class Display extends javafx.application.Application{
             else if(color == Color.DARKORANGE){ color = Color.AQUA; }
             else{ color = Color.BLACK; }
         });
+        Button restart = new Button("Restart");
+        restart.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+           updateValuesNewVis();
+        });
 
         HBox numDotsInterface = new HBox(10);
         Label numDotsLabel = new Label("Number of Dots");
         numDotsField = new TextField("0");
         numDotsInterface.getChildren().add(numDotsLabel);
         numDotsInterface.getChildren().add(numDotsField);
+
+        HBox timesTableInterface = new HBox(10);
+        Label timesTableLabel = new Label("Initial Times Table");
+        timesTableField = new TextField("2");
+        timesTableInterface.getChildren().add(timesTableLabel);
+        timesTableInterface.getChildren().add(timesTableField);
 
         HBox intervalInterface = new HBox(10);
         Label intervalLabel = new Label("Frames per Second");
@@ -78,13 +92,27 @@ public class Display extends javafx.application.Application{
         intervalInterface.getChildren().add(intervalLabel);
         intervalInterface.getChildren().add(intervalSlider);
 
+        HBox incrementInterface = new HBox(10);
+        Label incrementLabel = new Label("Increment Size");
+        incrementSlider = new Slider(0, 5, 1);
+        incrementSlider.setMinorTickCount(4);
+        incrementSlider.setMajorTickUnit(1);
+        incrementSlider.setShowTickMarks(true);
+        incrementSlider.setShowTickLabels(true);
+        incrementSlider.setSnapToTicks(true);
+        incrementInterface.getChildren().add(incrementLabel);
+        incrementInterface.getChildren().add(incrementSlider);
+
         VBox buttonInterface = new VBox(10);
         buttonInterface.setAlignment(Pos.TOP_CENTER);
 
         buttonInterface.getChildren().add(start);
         buttonInterface.getChildren().add(changeColor);
+        buttonInterface.getChildren().add(restart);
         buttonInterface.getChildren().add(numDotsInterface);
+        buttonInterface.getChildren().add(timesTableInterface);
         buttonInterface.getChildren().add(intervalInterface);
+        buttonInterface.getChildren().add(incrementInterface);
 
         BorderPane border = new BorderPane();
 
@@ -128,7 +156,6 @@ public class Display extends javafx.application.Application{
 
     private void initializeVis(){
         GraphicsContext gc = visual.getGraphicsContext2D();
-        double[] dotCoord;
         if(numDots%2 != 0){ numDots++; }
         vis = new Visualization(timesTable, numDots);
         gc.setFill(Color.WHITE);
@@ -138,6 +165,7 @@ public class Display extends javafx.application.Application{
         gc.setLineWidth(3);
         gc.strokeOval(5, 5, 400, 400);
         /*
+        double[] dotCoord;
         gc.setStroke(Color.BLACK);
         for(int i = 0; i < numDots; i++){
             dotCoord = vis.getDot(i);
@@ -160,7 +188,7 @@ public class Display extends javafx.application.Application{
         }
     }
 
-    private void updateValues(){
+    private void updateValuesNewVis(){
         String temp = numDotsField.getText();
         int newNumDots = 0;
         boolean validInput = false;
@@ -177,6 +205,24 @@ public class Display extends javafx.application.Application{
             if(newNumDots >= 0){ numDots = Math.min(newNumDots, 360); }
         }
 
+        temp = timesTableField.getText();
+        double newTimesTable = 0;
+        validInput = false;
+        if(!temp.equals("")){
+            try{
+                newTimesTable = Double.parseDouble(temp);
+                validInput = true;
+            } catch(NumberFormatException n){
+                System.out.println(temp +
+                        " is not a valid input for the times table.");
+            }
+        }
+        if(validInput){
+            if(newTimesTable >= 0){ timesTable= Math.min(newTimesTable, 360); }
+        }
+    }
+
+    private void updateValues(){
         double newInterval = intervalSlider.getValue();
         if(newInterval == 0.5){ interval = 2000; }
         else if(newInterval == 1){ interval = 1000; }
