@@ -18,6 +18,7 @@ public class Display extends javafx.application.Application{
 
     private Visualization vis;
     private Canvas visual;
+    private Label currTimesTable;
     private TextField numDotsField;
     private TextField timesTableField;
     private Slider intervalSlider;
@@ -27,7 +28,10 @@ public class Display extends javafx.application.Application{
     private double increment;
     private int interval;
     private Color color;
-    private boolean started = false;
+    private int favIndex;
+    private boolean started;
+    private boolean soloFrame;
+    private boolean firstRun;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -38,13 +42,24 @@ public class Display extends javafx.application.Application{
         increment = 1;
         interval = 1000;
         color = Color.BLACK;
+        favIndex = 0;
+        started = false;
+        soloFrame = false;
+        firstRun = true;
 
         visual = new Canvas(410, 410);
+
+        currTimesTable = new Label("Current Times Table: " + timesTable);
+
         Button start = new Button("Start");
         start.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if(!started){
                 started = true;
                 start.setText("Pause");
+                if(soloFrame){
+                    updateValuesNewVis();
+                    soloFrame = false;
+                }
             }
             else{
                 started = false;
@@ -65,8 +80,14 @@ public class Display extends javafx.application.Application{
             else{ color = Color.BLACK; }
         });
         Button restart = new Button("Restart");
-        restart.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                event -> updateValuesNewVis());
+        restart.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            updateValuesNewVis();
+            soloFrame = false;
+            if(!started){
+                started = true;
+                start.setText("Pause");
+            }
+        });
 
         HBox numDotsInterface = new HBox(10);
         Label numDotsLabel = new Label("Number of Dots");
@@ -102,9 +123,93 @@ public class Display extends javafx.application.Application{
         incrementInterface.getChildren().add(incrementLabel);
         incrementInterface.getChildren().add(incrementSlider);
 
+        Button jumpTo = new Button("Jump to Frame");
+        jumpTo.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            updateValuesNewVis();
+            increment = 0;
+            soloFrame = true;
+            if(started){
+                started = false;
+                start.setText("Start");
+            }
+        });
+
+        Button favorites = new Button("Favorites");
+        favorites.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if(favIndex == 0){
+                numDots = 69;
+                timesTable = 337;
+                color = Color.DARKOLIVEGREEN;
+                favIndex++;
+            }
+            else if(favIndex == 1){
+                numDots = 360;
+                timesTable = 305;
+                color = Color.MEDIUMVIOLETRED;
+                favIndex++;
+            }
+            else if(favIndex == 2){
+                numDots = 152;
+                timesTable = 51.799999999998;
+                color = Color.RED;
+                favIndex++;
+            }
+            else if(favIndex == 3){
+                numDots = 200;
+                timesTable = 100.999999999811;
+                color = Color.AQUA;
+                favIndex++;
+            }
+            else if(favIndex == 4){
+                numDots = 289;
+                timesTable = 30;
+                color = Color.DARKORANGE;
+                favIndex++;
+            }
+            else if(favIndex == 5){
+                numDots = 266;
+                timesTable = 67;
+                color = Color.YELLOWGREEN;
+                favIndex++;
+            }
+            else if(favIndex == 6){
+                numDots = 317;
+                timesTable = 106;
+                color = Color.VIOLET;
+                favIndex++;
+            }
+            else if(favIndex == 7){
+                numDots = 202;
+                timesTable = 202;
+                color = Color.MEDIUMTURQUOISE;
+                favIndex++;
+            }
+            else if(favIndex == 8){
+                numDots = 175;
+                timesTable = 36.3;
+                color = Color.MEDIUMBLUE;
+                favIndex++;
+            }
+            else{
+                numDots = 206;
+                timesTable = 308;
+                color = Color.BLACK;
+                favIndex = 0;
+            }
+
+            increment = 0;
+            soloFrame = true;
+            firstRun = false;
+            if(started){
+                started = false;
+                start.setText("Start");
+            }
+        });
+
         VBox buttonInterface = new VBox(10);
         buttonInterface.setAlignment(Pos.TOP_CENTER);
 
+        buttonInterface.getChildren().add(currTimesTable);
         buttonInterface.getChildren().add(start);
         buttonInterface.getChildren().add(changeColor);
         buttonInterface.getChildren().add(restart);
@@ -112,6 +217,8 @@ public class Display extends javafx.application.Application{
         buttonInterface.getChildren().add(timesTableInterface);
         buttonInterface.getChildren().add(intervalInterface);
         buttonInterface.getChildren().add(incrementInterface);
+        buttonInterface.getChildren().add(jumpTo);
+        buttonInterface.getChildren().add(favorites);
 
         BorderPane border = new BorderPane();
 
@@ -142,8 +249,14 @@ public class Display extends javafx.application.Application{
         AnimationTimer a = new AnimationTimer(){
             @Override
             public void handle(long now){
-                if (started) {
+                if(started || soloFrame){
+                    if(firstRun){
+                        updateValuesNewVis();
+                        firstRun = false;
+                        if(soloFrame){ increment = 0; }
+                    }
                     initializeVis();
+                    currTimesTable.setText("Current Times Table: " + timesTable);
                 }
             }
         };
@@ -163,6 +276,7 @@ public class Display extends javafx.application.Application{
         gc.setStroke(color);
         gc.setLineWidth(3);
         gc.strokeOval(5, 5, 400, 400);
+        drawVis(gc);
         /*
         double[] dotCoord;
         gc.setStroke(Color.BLACK);
@@ -171,7 +285,6 @@ public class Display extends javafx.application.Application{
             gc.fillOval(dotCoord[0]+5, dotCoord[1]+5, 3, 3);
         }
         */
-        drawVis(gc);
     }
 
     private void drawVis(GraphicsContext gc){
