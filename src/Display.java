@@ -269,7 +269,7 @@ public class Display extends javafx.application.Application{
     private void initializeVis(){
         GraphicsContext gc = visual.getGraphicsContext2D();
         if(numDots%2 != 0){ numDots++; }
-        vis = new Visualization(timesTable, numDots);
+        vis = new Visualization(numDots);
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, 405, 405);
         gc.setFill(Color.BLACK);
