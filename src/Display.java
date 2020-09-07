@@ -14,8 +14,41 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+/******************************************************************************
+ * Ashley Krattiger                                                           *
+ *                                                                            *
+ * Display                                                                    *
+ *                                                                            *
+ * Class handles all functions necessary for initializing and running the     *
+ * Visualization on an Application window.                                    *
+ *****************************************************************************/
 public class Display extends javafx.application.Application{
-
+    /**************************************************************************
+     * Global Variables:                                                      *
+     *                                                                        *
+     * vis - current Visualization that is shown in the window                *
+     * visual - Canvas on which the Visualization vis is drawn                *
+     * currTimesTable - Label that displays the current times table           *
+     * numDotsField - TextField that allows you to change the number of dots  *
+     * timesTableField - TextField that allows you to change the times table  *
+     * intervalSlider - Slider that allows you to change the interval or      *
+     *                 amount of time between each update of the Visualization*
+     * incrementSlider - Slider that allows you to change the increment or the*
+     *                   amount the times table changes with each pass        *
+     * numDots - holds the number of Dots in the visualization                *
+     * timesTable - holds the current value numbers are multiplied by for the *
+     *              Visualization                                             *
+     * increment - the amount the times table changes with each pass          *
+     * interval - the amount of time between each update of the Visualization *
+     * color - the current Color the Visualization is drawn in                *
+     * favIndex - index from 0 to 9 representing which of the Favorites frames*
+     *            will be displayed next time the button is pressed           *
+     * started - keeps track of whether the Visualization should be running   *
+     * soloFrame - keeps track of whether the current visual is supposed to be*
+     *             a single frame if true or an active running sequence       *
+     * firstRun - true if the Visualization hasn't been started since the     *
+     *            program began running                                       *
+     *************************************************************************/
     private Visualization vis;
     private Canvas visual;
     private Label currTimesTable;
@@ -33,6 +66,43 @@ public class Display extends javafx.application.Application{
     private boolean soloFrame;
     private boolean firstRun;
 
+    /**************************************************************************
+     * start()                                                                *
+     *                                                                        *
+     * Overridden class from Application. Throws Exception. Sets up the window*
+     * and all necessary Nodes, EventHandlers, and Threads (including one for *
+     * the AnimationTimer and one to allow the change in wait periods between *
+     * updates to the animation).                                             *
+     * Argument: primaryStage - Stage for this window                         *
+     * Returns nothing                                                        *
+     *                                                                        *
+     * Variables:                                                             *
+     * start - Button that starts the Visualization                           *
+     * changeColor - Button that changes the Color of the Visualization       *
+     * restart - Button that restarts the Visualization                       *
+     * numDotsInterface - holds Nodes for the section on changing the number  *
+     *                    of Dots                                             *
+     * numDotsLabel - Label for the TextField numDotsField (global)           *
+     * timesTableInterface - holds Nodes for the section on changing the times*
+     *                       table                                            *
+     * timesTableLabel - Label for the TextField timesTableField (global)     *
+     * intervalInterface - holds Nodes for the section on changing the        *
+     *                     interval                                           *
+     * intervalLabel - Label for the Slider intervalSlider (global)           *
+     * incrementInterface - holds Nodes for the section on changing the       *
+     *                      increment                                         *
+     * incrementLabel - Label for the Slider incrementSlider (global)         *
+     * jumpTo - Button for jumping to a still frame of the Visualization      *
+     * favorites - Button for changing the Visualization to one of the 10 hard*
+     *             coded favorite frames                                      *
+     * buttonInterface - holds all Nodes for the interface on the right side  *
+     *                   of the window                                        *
+     * border - BorderPane that organizes all Nodes for the Scene             *
+     * scene - the Scene for the Stage                                        *
+     * intervalTimer - Thread that updates the values to be shown on screen   *
+     *                 every @interval number of nanoseconds                  *
+     * a - AnimationTimer which constantly updates the Visualization          *
+     *************************************************************************/
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Modulo Times Table Visualization");
@@ -256,7 +326,7 @@ public class Display extends javafx.application.Application{
                         if(soloFrame){ increment = 0; }
                     }
                     initializeVis();
-                    currTimesTable.setText("Current Times Table: " + timesTable);
+                    currTimesTable.setText("Current Times Table: "+timesTable);
                 }
             }
         };
@@ -264,8 +334,28 @@ public class Display extends javafx.application.Application{
         a.start();
     }
 
+    /**************************************************************************
+     * startWindow()                                                          *
+     *                                                                        *
+     * Wrapper class that allows ModuloTimesTableVisualization to launch the  *
+     * window.                                                                *
+     *                                                                        *
+     * Argument: args - args passed from main                                 *
+     * Returns nothing                                                        *
+     *************************************************************************/
     public void startWindow(String[] args){ launch(args); }
 
+    /**************************************************************************
+     * initializeVis()                                                        *
+     *                                                                        *
+     * Draws the circle and initializes the Visualization vis, then calls     *
+     * drawVis(). Contains commented out debug code that draws the Dots on top*
+     * of the Visualization.                                                  *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * gc - GraphicsContext for Canvas vis (global)                           *
+     *************************************************************************/
     private void initializeVis(){
         GraphicsContext gc = visual.getGraphicsContext2D();
         if(numDots%2 != 0){ numDots++; }
@@ -287,6 +377,20 @@ public class Display extends javafx.application.Application{
         */
     }
 
+    /**************************************************************************
+     * drawVis()                                                              *
+     *                                                                        *
+     * Draws the lines for the Visualization based on double timesTable       *
+     * (global). Rounds results so there are no non-whole number results.     *
+     * Argument: gc - GraphicsContext from Canvas vis                         *
+     * Returns nothing                                                        *
+     *                                                                        *
+     * Variables:                                                             *
+     * product - holds result of multiplication by the times table modulo     *
+     *           the number of Dots                                           *
+     * origin - coordinates of the original Dot                               *
+     * end - coordinates of the Dot based on the results of product           *
+     *************************************************************************/
     private void drawVis(GraphicsContext gc){
         double product;
         double[] origin, end;
@@ -300,6 +404,20 @@ public class Display extends javafx.application.Application{
         }
     }
 
+    /**************************************************************************
+     * updateValuesNewVis()                                                   *
+     *                                                                        *
+     * Updates values necessary for starting a new Visualization              *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * temp - holds String taken from a TextField                             *
+     * newNumDots - holds int parsed from String temp for updating numDots    *
+     * validInput - checks if input from TextFields are valid for the         *
+     *              Visualization                                             *
+     * newTimesTable - holds double parsed from String temp for updating      *
+     *                 timesTable                                             *
+     *************************************************************************/
     private void updateValuesNewVis(){
         String temp = numDotsField.getText();
         int newNumDots = 0;
